@@ -40,12 +40,10 @@ services:
       - consensus-data:/cosmos
     entrypoint:
       - docker-entrypoint.sh
-      - akashd
+      - akash
       - start
       - --home
       - /cosmos
-      - --chain-id
-      - $NETWORK
       - --log_format
       - json
     labels:

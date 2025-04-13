@@ -20,21 +20,21 @@ It’s designed to work with [central-proxy-docker](https://github.com/CryptoMan
 3. **Install Docker (if needed):**
    Run:
    ```bash
-   ./akashd install
+   ./akash install
    ```
    This command installs Docker CE if it isn’t already installed.
 
 4. **Start the Node:**
    Bring up your akash RPC node by running:
    ```bash
-   ./akashd up
+   ./akash up
    ```
 
 5. **Software Updates:**
    To update the node software, run:
    ```bash
-   ./akashd update
-   ./akashd up
+   ./akash update
+   ./akash up
    ```
 
 ## Snapshot and Genesis Setup
@@ -42,7 +42,7 @@ It’s designed to work with [central-proxy-docker](https://github.com/CryptoMan
 When you first start the node, the container will:
 
 - **Initialize the node:**
-  Run `akashd init` with your specified `MONIKER` and `NETWORK`.
+  Run `akash init` with your specified `MONIKER` and `NETWORK`.
 - **Download the genesis file:**
   It retrieves the genesis file from the official akash mainnet repository.
 - **Download seeds:**
@@ -52,7 +52,7 @@ When you first start the node, the container will:
 
 ## CLI Usage
 
-A CLI image containing the `akashd` binary is also available. For example:
+A CLI image containing the `akash` binary is also available. For example:
 - To display node status:
   ```bash
   docker compose run --rm cli tendermint show-node-id

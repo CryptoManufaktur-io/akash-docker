@@ -18,7 +18,7 @@ version() {
 # Client versions
   case "${__value}" in
     *akash.yml* )
-      __docompose exec akash akashd version
+      __docompose exec akash akash version
       ;;&
   esac
 }

@@ -12,14 +12,14 @@ for var in "${REQUIRED_VARS[@]}"; do
 done
 
 # Trap SIGTERM and SIGINT so the script can exit quickly if requested.
-# Adjust the pkill command to target akashd.
-trap 'STOPPED=true; echo "Stopping services..."; pkill -SIGTERM akashd' SIGTERM SIGINT
+# Adjust the pkill command to target akash.
+trap 'STOPPED=true; echo "Stopping services..."; pkill -SIGTERM akash' SIGTERM SIGINT
 
 if [[ ! -f /cosmos/.initialized ]]; then
   echo "Initializing!"
 
   echo "Running init..."
-  akashd init "$MONIKER" --chain-id "$NETWORK" --home /cosmos --overwrite
+  akash init "$MONIKER" --chain-id "$NETWORK" --home /cosmos --overwrite
 
   echo "Downloading genesis..."
   wget https://snapshots.polkachu.com/genesis/akash/genesis.json -O /cosmos/config/genesis.json
@@ -86,7 +86,6 @@ dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
 dasel put -f /cosmos/config/app.toml -v 0 "iavl-cache-size"
 dasel put -f /cosmos/config/app.toml -v "true" "iavl-disable-fastnode"
 dasel put -f /cosmos/config/app.toml -v "signet" "btc-config.network"
-dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 
 # Word splitting is desired for the command line parameters.
 # shellcheck disable=SC2086

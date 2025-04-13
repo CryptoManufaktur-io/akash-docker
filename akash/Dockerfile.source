@@ -1,10 +1,10 @@
 # Get dasel
 FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
 
-# Build akashd
+# Build akash
 FROM golang:1.23-bookworm AS builder
 
-ARG DAEMON_VERSION=v0.9.0
+ARG DAEMON_VERSION=v0.38.0
 # Toggle insecure mode for local testing (set to "true" for local testing)
 ARG LOCAL_TESTING=false
 ENV LOCAL_TESTING=${LOCAL_TESTING}
@@ -16,7 +16,8 @@ WORKDIR /build
 
 # In one RUN command, conditionally set environment variables if LOCAL_TESTING is "true",
 # then clone the repository, check out the desired version, and build.
-RUN if [ "$LOCAL_TESTING" = "true" ]; then \
+RUN apt-get update && apt-get install -y direnv && \
+    if [ "$LOCAL_TESTING" = "true" ]; then \
       echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
       export GIT_SSL_NO_VERIFY=true && \
       export GOINSECURE="*" && \
@@ -27,12 +28,15 @@ RUN if [ "$LOCAL_TESTING" = "true" ]; then \
     else \
       echo "Production mode: Using secure defaults"; \
     fi && \
-    git clone https://github.com/crypto-org-chain/akash.git && \
+    git clone https://github.com/akash-network/node.git akash && \
     cd akash && \
     git checkout ${DAEMON_VERSION} && \
+    sed -i '/no envrc detected/d' make/init.mk && \
+    sed -i '/AKASH_ROOT is not set/d' make/init.mk && \
+    export AKASH_ROOT=$(pwd) && \
     make install
 
-RUN akashd version
+RUN akash version
 
 # Place libraries into a location where they can be easily found
 RUN find /go/pkg/mod -name '*.so' -exec cp -v {} /usr/local/lib/ \;
@@ -61,7 +65,7 @@ RUN mkdir -p /cosmos/config
 RUN mkdir /cosmos/data
 
 COPY --from=dasel --chown=${USER}:${USER} /usr/local/bin/dasel /usr/local/bin/
-COPY --from=builder --chown=${USER}:${USER} /go/bin/akashd /usr/local/bin/
+COPY --from=builder --chown=${USER}:${USER} /go/bin/akash /usr/local/bin/
 COPY --from=builder --chown=${USER}:${USER} /usr/local/lib/*.so /usr/local/lib/
 
 # Set correct permissions for /cosmos
@@ -80,4 +84,4 @@ RUN chmod -R 755 /usr/local/bin/*
 
 USER ${USER}
 
-ENTRYPOINT ["akashd", "--home", "/cosmos"]
+ENTRYPOINT ["akash", "--home", "/cosmos"]
